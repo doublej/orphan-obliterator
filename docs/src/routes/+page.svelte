@@ -90,11 +90,11 @@
       <div class="demo-grid">
         <div class="demo-card">
           <span class="demo-label">Before</span>
-          <p class="demo-text before">Beautiful typography means no single word should ever be left stranded alone on its own line, looking <span class="orphan">lonely.</span></p>
+          <p class="demo-text before">Good typography keeps words together so no single word sits on a line by <span class="orphan">itself.</span></p>
         </div>
         <div class="demo-card">
           <span class="demo-label active">After</span>
-          <p class="demo-text after">Beautiful typography means no single word should ever be left stranded alone on its own line, looking&nbsp;lonely.</p>
+          <p class="demo-text after">Good typography keeps words together so no single word sits on a line by&nbsp;itself.</p>
         </div>
       </div>
     </div>
