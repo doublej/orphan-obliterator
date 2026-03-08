@@ -56,7 +56,7 @@
   let copied = $state(false);
 
   function copyInstall() {
-    navigator.clipboard.writeText('bunx orphan-obliterator');
+    navigator.clipboard.writeText('bunx github:doublej/orphan-obliterator');
     copied = true;
     setTimeout(() => copied = false, 2000);
   }
@@ -78,7 +78,7 @@
         word&#8209;count&nbsp;minimums, and&nbsp;more.
       </p>
       <div class="install-box">
-        <code>bunx orphan-obliterator</code>
+        <code>bunx github:doublej/orphan-obliterator</code>
         <button onclick={copyInstall}>{copied ? 'Copied' : 'Copy'}</button>
       </div>
     </div>
@@ -90,11 +90,11 @@
       <div class="demo-grid">
         <div class="demo-card">
           <span class="demo-label">Before</span>
-          <p class="demo-text before">Good design means not leaving a single word <span class="orphan">stranded.</span></p>
+          <p class="demo-text before">Good typography prevents<br>words from ending up all<br><span class="orphan">alone.</span></p>
         </div>
         <div class="demo-card">
           <span class="demo-label active">After</span>
-          <p class="demo-text after">Good design means not leaving a single word&nbsp;stranded.</p>
+          <p class="demo-text after">Good typography prevents<br>words from ending<br>up all&nbsp;alone.</p>
         </div>
       </div>
     </div>
@@ -323,10 +323,10 @@
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--text-secondary);
-    max-width: 240px;
+    max-width: 300px;
   }
 
-  .orphan {
+  .demo-text :global(.orphan) {
     color: #dc2626;
     text-decoration: underline wavy #dc2626;
     text-underline-offset: 3px;
