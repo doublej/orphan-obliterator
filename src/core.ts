@@ -1,5 +1,5 @@
 import type { OrphanConfig, OrphanInput, OrphanInstance } from './types'
-import { resolveRule, shouldApply } from './rules'
+import { isMultiLine, resolveRule, shouldApply } from './rules'
 
 const NBSP = '\u00A0'
 const DEMO_ATTR = 'data-orphan-demo'
@@ -38,6 +38,25 @@ function injectDemoStyles(): void {
     `[${DEMO_ATTR}]:hover::after{opacity:1;pointer-events:auto}`,
   ].join('\n')
   document.head.appendChild(style)
+}
+
+function hasOrphan(node: Text): boolean {
+  const text = node.textContent || ''
+  const lastSpace = text.lastIndexOf(' ')
+  if (lastSpace === -1) return false
+
+  const range = document.createRange()
+  range.setStart(node, lastSpace + 1)
+  range.setEnd(node, text.length)
+  const lastRect = range.getBoundingClientRect()
+
+  range.setStart(node, 0)
+  range.setEnd(node, lastSpace)
+  const rects = range.getClientRects()
+  if (rects.length === 0) return false
+  const prevRect = rects[rects.length - 1]
+
+  return Math.abs(lastRect.top - prevRect.top) > 2
 }
 
 function wrapDemoSpan(node: Text, splitIndex: number, protectedText: string): void {
@@ -79,24 +98,18 @@ function processElement(el: HTMLElement, config: OrphanConfig): void {
   }
   if (replaced === 0) return
 
-  const fixed = parts.join('')
+  if (config.demo && (!isMultiLine(el) || !hasOrphan(node))) {
+    node.textContent = parts.join('')
+    return
+  }
 
   if (config.demo) {
-    const heightBefore = el.scrollHeight
-    node.textContent = fixed
-    const heightAfter = el.scrollHeight
-
-    if (heightBefore !== heightAfter) {
-      // Fix actually moved words between lines — restore and wrap with demo span
-      node.textContent = originals.get(node)!
-      injectDemoStyles()
-      const splitPos = parts.slice(0, firstReplacedIndex).join('').length
-      const protectedText = parts.slice(firstReplacedIndex).join('')
-      wrapDemoSpan(node, splitPos, protectedText)
-    }
-    // If height didn't change, keep the NBSP fix silently (no highlight)
+    injectDemoStyles()
+    const splitPos = parts.slice(0, firstReplacedIndex).join('').length
+    const protectedText = parts.slice(firstReplacedIndex).join('')
+    wrapDemoSpan(node, splitPos, protectedText)
   } else {
-    node.textContent = fixed
+    node.textContent = parts.join('')
   }
 }
 
