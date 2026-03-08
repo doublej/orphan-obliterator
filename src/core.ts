@@ -79,13 +79,24 @@ function processElement(el: HTMLElement, config: OrphanConfig): void {
   }
   if (replaced === 0) return
 
+  const fixed = parts.join('')
+
   if (config.demo) {
-    injectDemoStyles()
-    const splitPos = parts.slice(0, firstReplacedIndex).join('').length
-    const protectedText = parts.slice(firstReplacedIndex).join('')
-    wrapDemoSpan(node, splitPos, protectedText)
+    const heightBefore = el.scrollHeight
+    node.textContent = fixed
+    const heightAfter = el.scrollHeight
+
+    if (heightBefore !== heightAfter) {
+      // Fix actually moved words between lines — restore and wrap with demo span
+      node.textContent = originals.get(node)!
+      injectDemoStyles()
+      const splitPos = parts.slice(0, firstReplacedIndex).join('').length
+      const protectedText = parts.slice(firstReplacedIndex).join('')
+      wrapDemoSpan(node, splitPos, protectedText)
+    }
+    // If height didn't change, keep the NBSP fix silently (no highlight)
   } else {
-    node.textContent = parts.join('')
+    node.textContent = fixed
   }
 }
 

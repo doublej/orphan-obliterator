@@ -6,7 +6,11 @@
 
   onMount(async () => {
     const { obliterate } = await import('orphan-obliterator');
-    const orphans = obliterate('p, li, h2, h3');
+    const orphans = obliterate({
+      selectors: ['p', 'li', 'h2', 'h3'],
+      rules: { onlyMultiLine: true },
+      demo: true,
+    });
     return () => orphans.destroy();
   });
 </script>
