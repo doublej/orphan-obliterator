@@ -31,7 +31,12 @@ function injectDemoStyles(): void {
   if (document.getElementById(STYLE_ID)) return
   const style = document.createElement('style')
   style.id = STYLE_ID
-  style.textContent = `[${DEMO_ATTR}]{outline:1px dotted #ccc;outline-offset:1px;border-radius:2px}`
+  style.textContent = [
+    `[${DEMO_ATTR}]{outline:1px dotted #ccc;outline-offset:2px;border-radius:2px;cursor:pointer;position:relative}`,
+    `[${DEMO_ATTR}]:hover{outline-color:#999}`,
+    `[${DEMO_ATTR}]::after{content:attr(data-orphan-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);padding:4px 8px;background:#333;color:#fff;font-size:12px;line-height:1.4;white-space:nowrap;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .15s}`,
+    `[${DEMO_ATTR}]:hover::after{opacity:1;pointer-events:auto}`,
+  ].join('\n')
   document.head.appendChild(style)
 }
 
@@ -39,7 +44,8 @@ function wrapDemoSpan(node: Text, splitIndex: number, protectedText: string): vo
   const parent = node.parentNode!
   const span = document.createElement('span')
   span.setAttribute(DEMO_ATTR, '')
-  span.title = 'Orphan prevented by orphan-obliterator'
+  span.setAttribute('data-orphan-tip', 'corrected using orphan-obliterator')
+  span.addEventListener('click', () => window.open('https://github.com/doublej/orphan-obliterator', '_blank'))
   span.textContent = protectedText
   const before = node.textContent!.slice(0, splitIndex)
   if (before) {
