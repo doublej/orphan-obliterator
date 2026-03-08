@@ -2,6 +2,8 @@ import type { OrphanConfig, OrphanInput, OrphanInstance } from './types'
 import { resolveRule, shouldApply } from './rules'
 
 const NBSP = '\u00A0'
+const DEMO_ATTR = 'data-orphan-demo'
+const STYLE_ID = 'orphan-obliterator-demo'
 const originals = new WeakMap<Text, string>()
 
 function normalizeConfigs(input: OrphanInput): OrphanConfig[] {
@@ -25,6 +27,29 @@ function lastTextNode(el: Node): Text | null {
   return null
 }
 
+function injectDemoStyles(): void {
+  if (document.getElementById(STYLE_ID)) return
+  const style = document.createElement('style')
+  style.id = STYLE_ID
+  style.textContent = `[${DEMO_ATTR}]{outline:1px dotted #ccc;outline-offset:1px;border-radius:2px}`
+  document.head.appendChild(style)
+}
+
+function wrapDemoSpan(node: Text, splitIndex: number, protectedText: string): void {
+  const parent = node.parentNode!
+  const span = document.createElement('span')
+  span.setAttribute(DEMO_ATTR, '')
+  span.title = 'Orphan prevented by orphan-obliterator'
+  span.textContent = protectedText
+  const before = node.textContent!.slice(0, splitIndex)
+  if (before) {
+    node.textContent = before
+    parent.insertBefore(span, node.nextSibling)
+  } else {
+    parent.replaceChild(span, node)
+  }
+}
+
 function processElement(el: HTMLElement, config: OrphanConfig): void {
   const node = lastTextNode(el)
   if (!node?.textContent) return
@@ -37,17 +62,34 @@ function processElement(el: HTMLElement, config: OrphanConfig): void {
 
   const parts = node.textContent.split(/( +)/)
   let replaced = 0
+  let firstReplacedIndex = -1
   const needed = rule.minLastLineWords - 1
   for (let i = parts.length - 1; i >= 0 && replaced < needed; i--) {
     if (/^ +$/.test(parts[i])) {
       parts[i] = NBSP
+      firstReplacedIndex = i
       replaced++
     }
   }
-  if (replaced > 0) node.textContent = parts.join('')
+  if (replaced === 0) return
+
+  if (config.demo) {
+    injectDemoStyles()
+    const splitPos = parts.slice(0, firstReplacedIndex).join('').length
+    const protectedText = parts.slice(firstReplacedIndex).join('')
+    wrapDemoSpan(node, splitPos, protectedText)
+  } else {
+    node.textContent = parts.join('')
+  }
 }
 
 function restoreElement(el: HTMLElement): void {
+  for (const span of el.querySelectorAll(`[${DEMO_ATTR}]`)) {
+    const parent = span.parentNode!
+    while (span.firstChild) parent.insertBefore(span.firstChild, span)
+    parent.removeChild(span)
+    parent.normalize()
+  }
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
   let node: Text | null
   while ((node = walker.nextNode() as Text | null)) {
@@ -114,6 +156,7 @@ export function obliterate(input: OrphanInput): OrphanInstance {
           restoreElement(el)
         }
       }
+      document.getElementById(STYLE_ID)?.remove()
     },
   }
 }

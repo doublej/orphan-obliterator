@@ -22,6 +22,8 @@ export interface OrphanConfig {
   observe?: boolean
   /** Re-apply on window resize (default: false) */
   responsive?: boolean
+  /** Show subtle dotted outline around fixed words (default: false) */
+  demo?: boolean
 }
 
 export type OrphanInput = string | OrphanConfig | OrphanConfig[]
