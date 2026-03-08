@@ -56,7 +56,7 @@
   let copied = $state(false);
 
   function copyInstall() {
-    navigator.clipboard.writeText('bun add orphan-obliterator');
+    navigator.clipboard.writeText('bunx orphan-obliterator');
     copied = true;
     setTimeout(() => copied = false, 2000);
   }
@@ -78,7 +78,7 @@
         word&#8209;count&nbsp;minimums, and&nbsp;more.
       </p>
       <div class="install-box">
-        <code>bun add orphan-obliterator</code>
+        <code>bunx orphan-obliterator</code>
         <button onclick={copyInstall}>{copied ? 'Copied' : 'Copy'}</button>
       </div>
     </div>
@@ -90,11 +90,11 @@
       <div class="demo-grid">
         <div class="demo-card">
           <span class="demo-label">Before</span>
-          <p class="demo-text before">Good typography keeps words together so no single word sits on a line by <span class="orphan">itself.</span></p>
+          <p class="demo-text before">Good design means not leaving a single word <span class="orphan">stranded.</span></p>
         </div>
         <div class="demo-card">
           <span class="demo-label active">After</span>
-          <p class="demo-text after">Good typography keeps words together so no single word sits on a line by&nbsp;itself.</p>
+          <p class="demo-text after">Good design means not leaving a single word&nbsp;stranded.</p>
         </div>
       </div>
     </div>
@@ -323,7 +323,7 @@
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--text-secondary);
-    max-width: 300px;
+    max-width: 240px;
   }
 
   .orphan {
