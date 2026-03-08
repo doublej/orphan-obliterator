@@ -23,10 +23,13 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install dependencies
+      - name: Build library
+        run: bun install && bun run build
+
+      - name: Install docs dependencies
         run: cd docs && bun install
 
-      - name: Build
+      - name: Build docs
         run: cd docs && bun run build
         env:
           NODE_ENV: production
