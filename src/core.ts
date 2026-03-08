@@ -169,7 +169,7 @@ export function obliterate(input: OrphanInput): OrphanInstance {
     observers.push(mo)
   }
 
-  if (configs.some(c => c.responsive)) {
+  if (configs.some(c => c.responsive ?? c.demo)) {
     const ro = new ResizeObserver(debounce(update, 150))
     ro.observe(document.documentElement)
     observers.push(ro)
